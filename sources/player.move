@@ -73,8 +73,8 @@ public fun uid(self: &Player): &UID {
     &self.id
 }
 
-public fun derive_address(self: &PlayerRegistry, owner: address): address {
-    derived_object::derive_address(self.id.to_inner(), PlayerKey(owner))
+public fun derive_address(registry: &PlayerRegistry, owner: address): address {
+    derived_object::derive_address(registry.id.to_inner(), PlayerKey(owner))
 }
 
 // === Test Functions ===
