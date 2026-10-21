@@ -54,7 +54,6 @@ fun new_sends_derived_player_to_sender() {
     let mut scenario = setup();
     let player_id = create_player(&mut scenario, LISTENER);
 
-    // `test_scenario` clears the event log at `next_tx`.
     let events = event::events_by_type<PlayerCreatedEvent>();
     assert_eq!(events.length(), 1);
     let (event_player_id, event_owner) = player::player_created_event_fields(&events[0]);
@@ -87,8 +86,6 @@ fun each_address_gets_its_own_player() {
 fun second_player_for_address_aborts() {
     let mut scenario = setup();
 
-    // Both creates on one registry borrow, so the second hits the derived-ID
-    // claim rather than test-scenario inventory.
     scenario.next_tx(LISTENER);
     let mut registry = scenario.take_shared<PlayerRegistry>();
     player::new(&mut registry, scenario.ctx());
@@ -125,8 +122,6 @@ fun withdraw_funds_returns_requested_balance() {
     let mut scenario = setup();
     create_player(&mut scenario, LISTENER);
 
-    // Unit tests can't settle funds into an address balance, so only an
-    // empty withdrawal is exercisable here.
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
     let funds = player.withdraw_funds<SUI>(0);
