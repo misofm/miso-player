@@ -86,7 +86,6 @@ fun each_address_gets_its_own_player() {
 #[test, expected_failure(abort_code = derived_object::EObjectAlreadyExists)]
 fun second_player_for_address_aborts() {
     let mut scenario = setup();
-
     scenario.next_tx(LISTENER);
     let mut registry = scenario.take_shared<PlayerRegistry>();
     player::new(&mut registry, scenario.ctx());
