@@ -43,7 +43,6 @@ fun init_shares_registry_without_event() {
     let mut scenario = ts::begin(LISTENER);
     player::init_for_testing(scenario.ctx());
     assert_eq!(event::num_events(), 0);
-
     scenario.next_tx(OTHER_LISTENER);
     let registry = scenario.take_shared<PlayerRegistry>();
     ts::return_shared(registry);
@@ -54,13 +53,11 @@ fun init_shares_registry_without_event() {
 fun new_sends_derived_player_to_sender() {
     let mut scenario = setup();
     let player_id = create_player(&mut scenario, LISTENER);
-
     let events = event::events_by_type<PlayerCreatedEvent>();
     assert_eq!(events.length(), 1);
     let (event_player_id, event_owner) = player::player_created_event_fields(&events[0]);
     assert_eq!(event_player_id, player_id);
     assert_eq!(event_owner, LISTENER);
-
     scenario.next_tx(LISTENER);
     let player = scenario.take_from_sender<Player>();
     assert_eq!(object::id(&player), player_id);
@@ -75,7 +72,6 @@ fun each_address_gets_its_own_player() {
     let first_id = create_player(&mut scenario, LISTENER);
     let second_id = create_player(&mut scenario, OTHER_LISTENER);
     assert!(first_id != second_id);
-
     scenario.next_tx(OTHER_LISTENER);
     let player = scenario.take_from_sender<Player>();
     assert_eq!(object::id(&player), second_id);
@@ -100,12 +96,10 @@ fun second_player_for_address_aborts() {
 fun objects_sent_to_player_come_out_through_uid_mut() {
     let mut scenario = setup();
     let player_id = create_player(&mut scenario, LISTENER);
-
     scenario.next_tx(OTHER_LISTENER);
     let gift = coin::mint_for_testing<SUI>(42, scenario.ctx());
     let gift_id = object::id(&gift);
     transfer::public_transfer(gift, player_id.to_address());
-
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
     let ticket = ts::receiving_ticket_by_id<Coin<SUI>>(gift_id);
@@ -121,7 +115,6 @@ fun objects_sent_to_player_come_out_through_uid_mut() {
 fun funds_sent_to_player_come_out_through_uid_mut() {
     let mut scenario = setup();
     create_player(&mut scenario, LISTENER);
-
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
     let funds = balance::redeem_funds(
@@ -139,12 +132,10 @@ fun funds_sent_to_player_come_out_through_uid_mut() {
 fun extensions_attach_through_uid_mut() {
     let mut scenario = setup();
     create_player(&mut scenario, LISTENER);
-
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
     dynamic_field::add(player.uid_mut(), TestKey(), b"value");
     assert_eq!(*dynamic_field::borrow<TestKey, vector<u8>>(player.uid(), TestKey()), b"value");
-
     let child = derived_object::claim(player.uid_mut(), TestKey());
     assert_eq!(
         child.to_address(),
