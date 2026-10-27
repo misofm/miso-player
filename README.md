@@ -4,7 +4,8 @@
 
 A `Player` is the consumer-side counterpart to a Party, which is business-side
 only. It holds nothing but its `UID`. Features attach to it from other
-packages, so the core never changes.
+packages, so the core never changes as the Player grows into a customizable
+virtual device.
 
 - **One per address.** A `Player` is derived from the shared `PlayerRegistry`
   with the owner's address as key. Anyone can compute a listener's player ID
