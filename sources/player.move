@@ -5,10 +5,8 @@ module miso_player::player;
 
 // === Imports ===
 
-use sui::balance::{Self, Balance};
 use sui::derived_object;
 use sui::event::emit;
-use sui::transfer::Receiving;
 
 // === Structs ===
 
@@ -44,14 +42,6 @@ public fun new(registry: &mut PlayerRegistry, ctx: &mut TxContext) {
 
 public fun uid_mut(self: &mut Player): &mut UID {
     &mut self.id
-}
-
-public fun receive<Item: key + store>(self: &mut Player, item: Receiving<Item>): Item {
-    transfer::public_receive(&mut self.id, item)
-}
-
-public fun withdraw_funds<Currency>(self: &mut Player, amount: u64): Balance<Currency> {
-    balance::redeem_funds(balance::withdraw_funds_from_object(&mut self.id, amount))
 }
 
 // === View Functions ===

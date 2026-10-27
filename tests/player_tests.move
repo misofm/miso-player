@@ -5,6 +5,7 @@
 module miso_player::player_tests;
 
 use std::unit_test::assert_eq;
+use sui::balance;
 use sui::coin::{Self, Coin};
 use sui::derived_object;
 use sui::dynamic_field;
@@ -97,7 +98,7 @@ fun second_player_for_address_aborts() {
 // === Holdings ===
 
 #[test]
-fun receive_takes_object_sent_to_player() {
+fun objects_sent_to_player_come_out_through_uid_mut() {
     let mut scenario = setup();
     let player_id = create_player(&mut scenario, LISTENER);
 
@@ -109,7 +110,7 @@ fun receive_takes_object_sent_to_player() {
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
     let ticket = ts::receiving_ticket_by_id<Coin<SUI>>(gift_id);
-    let received = player.receive(ticket);
+    let received = transfer::public_receive(player.uid_mut(), ticket);
     assert_eq!(object::id(&received), gift_id);
     assert_eq!(received.value(), 42);
     transfer::public_transfer(received, LISTENER);
@@ -118,13 +119,15 @@ fun receive_takes_object_sent_to_player() {
 }
 
 #[test]
-fun withdraw_funds_returns_requested_balance() {
+fun funds_sent_to_player_come_out_through_uid_mut() {
     let mut scenario = setup();
     create_player(&mut scenario, LISTENER);
 
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
-    let funds = player.withdraw_funds<SUI>(0);
+    let funds = balance::redeem_funds(
+        balance::withdraw_funds_from_object<SUI>(player.uid_mut(), 0),
+    );
     assert_eq!(funds.value(), 0);
     funds.destroy_zero();
     scenario.return_to_sender(player);

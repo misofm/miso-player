@@ -39,10 +39,12 @@ let account = StreamingAccount {
 
 ## Holdings
 
-Objects sent to the player's address, such as Records, belong to the player.
-Its owner takes them out with `receive`. Funds sent with `balance::send_funds`
-come out with `withdraw_funds<Currency>`. A collection can be listed over plain
-RPC as the objects owned by the player's address.
+Objects sent to the player's address, such as Records, and funds sent with
+`balance::send_funds` belong to the player. This package has no functions to
+take them out: extensions do that through `uid_mut`, with
+`transfer::public_receive` and `balance::withdraw_funds_from_object`. A
+collection can be listed over plain RPC as the objects owned by the player's
+address.
 
 ## Events
 
@@ -54,8 +56,7 @@ alone, with no object reads.
 | `PlayerCreatedEvent` | `player_id: ID`, `owner: address` |
 
 `init` emits no event: the singleton `PlayerRegistry` ID comes from the publish
-transaction's object effects. `receive` and `withdraw_funds` emit nothing; the
-transaction's effects record the objects and funds that move.
+transaction's object effects.
 
 ## Errors
 
