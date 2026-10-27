@@ -3,8 +3,8 @@
 > A listener's on-chain root: one slim, non-transferable `Player` per address, which other packages extend.
 
 A `Player` is the consumer-side counterpart to a Party, which is business-side
-only. It holds nothing but its `UID`. Features attach to it, so the core never
-changes as the Player grows into a customizable virtual device.
+only. It holds nothing but its `UID`. Features attach to it from other
+packages, so the core never changes.
 
 - **One per address.** A `Player` is derived from the shared `PlayerRegistry`
   with the owner's address as key. Anyone can compute a listener's player ID
@@ -19,20 +19,9 @@ changes as the Player grows into a customizable virtual device.
 
 ## Attaching features
 
-**Owner-written data** attaches as an extension: a dynamic field on
-`uid_mut`, one package per concern, each with its own key. Examples are skins
-and device settings.
-
-```move
-use sui::dynamic_field;
-use miso_player::player::Player;
-
-public struct ExtensionKey() has copy, drop, store;
-
-public fun set_skin(player: &mut Player, skin: Skin) {
-    dynamic_field::add(player.uid_mut(), ExtensionKey(), skin);
-}
-```
+**Owner-written data** attaches as a dynamic field through `uid_mut`. Each
+extension is its own package and defines its own key there, named for what it
+stores; this package defines no extension keys.
 
 **Anything with its own funds or public writes** is a separate object derived
 from the player, for example a streaming account that anyone can settle

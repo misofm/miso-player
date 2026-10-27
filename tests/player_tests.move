@@ -16,7 +16,7 @@ use miso_player::player::{Self, Player, PlayerCreatedEvent, PlayerRegistry};
 const LISTENER: address = @0xA1;
 const OTHER_LISTENER: address = @0xB2;
 
-public struct ExtensionKey() has copy, drop, store;
+public struct TestKey() has copy, drop, store;
 
 // === Helpers ===
 
@@ -140,13 +140,13 @@ fun extensions_attach_through_uid_mut() {
 
     scenario.next_tx(LISTENER);
     let mut player = scenario.take_from_sender<Player>();
-    dynamic_field::add(player.uid_mut(), ExtensionKey(), b"skin");
-    assert_eq!(*dynamic_field::borrow<ExtensionKey, vector<u8>>(player.uid(), ExtensionKey()), b"skin");
+    dynamic_field::add(player.uid_mut(), TestKey(), b"value");
+    assert_eq!(*dynamic_field::borrow<TestKey, vector<u8>>(player.uid(), TestKey()), b"value");
 
-    let child = derived_object::claim(player.uid_mut(), ExtensionKey());
+    let child = derived_object::claim(player.uid_mut(), TestKey());
     assert_eq!(
         child.to_address(),
-        derived_object::derive_address(object::id(&player), ExtensionKey()),
+        derived_object::derive_address(object::id(&player), TestKey()),
     );
     child.delete();
     scenario.return_to_sender(player);
