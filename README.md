@@ -1,4 +1,4 @@
-> **Moved.** This repository is archived. Its packages now live in [`misofm/framework`](https://github.com/misofm/framework/tree/main/player/miso_player) under `player/miso_player/`.
+> **Moved.** This repository is archived. Its package now lives in [`misofm/framework`](https://github.com/misofm/framework/tree/main/miso_player) under `miso_player/`.
 
 # Miso Player
 
